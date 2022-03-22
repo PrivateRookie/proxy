@@ -1,0 +1,6 @@
+{
+    "rust-analyzer.cargo.allFeatures": true,
+    "cSpell.words": [
+        "httparse"
+    ]
+}
