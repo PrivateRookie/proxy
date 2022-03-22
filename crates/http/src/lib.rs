@@ -24,12 +24,11 @@ pub struct ProxyConfig {
 
 impl ProxyConfig {
     /// return request string
-    pub fn req_str(&self, target: (&str, u16)) -> String {
-        let host = format!("{}:{}", target.0, target.1);
+    pub fn req_str(&self, target: &str) -> String {
         let mut builder = http::request::Builder::new()
             .method("connect")
-            .uri(host.clone())
-            .header("host", host);
+            .uri(target)
+            .header("host", target);
         if self.keep_alive {
             builder = builder.header("proxy-connection", "keep-alive")
         }
@@ -155,7 +154,7 @@ mod sync {
     pub fn connect_with<S: Read + Write>(
         stream: &mut S,
         config: &ProxyConfig,
-        target: (&str, u16),
+        target: &str,
     ) -> IOResult<()> {
         let req_str = config.req_str(target);
         tracing::debug!("send req\n{}", req_str);
@@ -169,7 +168,7 @@ mod sync {
     }
 
     /// create connection from proxy config
-    pub fn create_conn(config: &ProxyConfig, target: (&str, u16)) -> IOResult<TcpStream> {
+    pub fn create_conn(config: &ProxyConfig, target: &str) -> IOResult<TcpStream> {
         let mut stream = TcpStream::connect((config.host.clone(), config.port))?;
         connect_with(&mut stream, config, target)?;
         Ok(stream)
@@ -209,7 +208,7 @@ mod async_ {
     pub async fn async_connect_with<S: AsyncWrite + AsyncRead + Unpin>(
         stream: &mut S,
         config: &ProxyConfig,
-        target: (&str, u16),
+        target: &str,
     ) -> IOResult<()> {
         let req_str = config.req_str(target);
         tracing::debug!("send req\n{}", req_str);
@@ -223,10 +222,7 @@ mod async_ {
     }
 
     /// create connection from proxy config
-    pub async fn async_create_conn(
-        config: &ProxyConfig,
-        target: (&str, u16),
-    ) -> IOResult<TcpStream> {
+    pub async fn async_create_conn(config: &ProxyConfig, target: &str) -> IOResult<TcpStream> {
         let mut stream = TcpStream::connect((config.host.clone(), config.port)).await?;
         async_connect_with(&mut stream, config, target).await?;
         Ok(stream)
