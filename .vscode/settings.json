@@ -1,6 +1,7 @@
 {
     "rust-analyzer.cargo.allFeatures": true,
     "cSpell.words": [
+        "GSSAPI",
         "httparse"
     ]
 }
