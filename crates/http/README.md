@@ -1,4 +1,6 @@
-# rust http proxy
+# rust http proxy client
+
+use by [ws-tool](https://github.com/PrivateRookie/ws-tool)
 
 ## REF
 

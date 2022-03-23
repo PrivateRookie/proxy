@@ -2,6 +2,13 @@
 name = "sproxy"
 version = "0.1.0"
 edition = "2021"
+authors = ["PrivateRookie <996514515@qq.com>"]
+description = "socks5 proxy client"
+license-file = "../../LICENSE"
+readme = "README.md"
+homepage = "https://github.com/PrivateRookie/proxy"
+repository = "https://github.com/PrivateRookie/proxy"
+keywords = ["socks5", "proxy", "network", "tokio"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
