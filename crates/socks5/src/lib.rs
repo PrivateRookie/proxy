@@ -2,17 +2,27 @@
 
 #![warn(missing_docs)]
 
-use std::net::{Ipv4Addr, Ipv6Addr};
+use std::{
+    net::{Ipv4Addr, Ipv6Addr},
+    str::FromStr,
+};
 
 use bytes::{Buf, BufMut, BytesMut};
 
 #[cfg(feature = "async")]
 mod async_;
+#[cfg(feature = "async")]
+pub use async_::*;
+
 #[cfg(feature = "sync")]
 mod sync;
+#[cfg(feature = "sync")]
+pub use sync::*;
 
 /// socks5 protocol version
 pub const VERS: u8 = 0x05;
+/// simple [std::io::Result] wrapper
+pub type IOResult<T> = std::io::Result<T>;
 
 /// socks5 auth method
 pub struct AuthMethod;
@@ -78,12 +88,9 @@ fn build_init_req(methods: Vec<u8>) -> BytesMut {
     buf
 }
 
-fn parse_init_resp(mut data: BytesMut) -> u8 {
-    assert!(data.len() >= 2);
-    let ver = data.get_u8();
-    assert_eq!(ver, VERS);
-    let method = data.get_u8();
-    method
+fn parse_init_resp(data: [u8; 2]) -> u8 {
+    assert_eq!(data[0], VERS);
+    data[1]
 }
 
 fn build_auth_basic_req(username: String, password: String) -> BytesMut {
@@ -98,12 +105,9 @@ fn build_auth_basic_req(username: String, password: String) -> BytesMut {
     data
 }
 
-fn parse_auth_basic_resp(mut data: BytesMut) -> bool {
-    assert!(data.len() >= 2);
-    let ver = data.get_u8();
-    assert_eq!(ver, 01);
-    let status = data.get_u8();
-    status == 0
+fn parse_auth_basic_resp(data: [u8; 2]) -> bool {
+    assert_eq!(data[0], 01);
+    data[1] == 0
 }
 
 /// socks5 dest addr
@@ -114,6 +118,15 @@ pub enum Addr {
     Host(String),
     /// ipv6 addr 16 bytes
     V6(Ipv6Addr),
+}
+
+impl From<&str> for Addr {
+    fn from(addr: &str) -> Self {
+        Ipv4Addr::from_str(addr)
+            .map(Addr::V4)
+            .or_else(|_| Ipv6Addr::from_str(addr).map(Addr::V6))
+            .unwrap_or(Addr::Host(addr.to_string()))
+    }
 }
 
 impl Addr {
@@ -171,8 +184,11 @@ impl Addr {
 /// socks command
 #[derive(Debug, Clone)]
 pub enum Command {
+    /// connect
     Connect,
+    /// bind(wip)
     Bind,
+    /// UDP(wip)
     UdpAssociate,
 }
 
@@ -208,6 +224,7 @@ fn build_cmd_req(cmd: Command, addr: Addr, port: u16) -> BytesMut {
 }
 
 /// command request response status
+#[derive(Debug, Clone)]
 pub enum Reply {
     /// succeeded
     Succeeded,
@@ -274,4 +291,32 @@ fn parse_cmd_resp(mut data: BytesMut) -> Result<(Reply, Addr, u16), String> {
     let addr = Addr::de_serde(&mut data)?;
     let port = data.get_u16();
     Ok((reply, addr, port))
+}
+
+/// proxy connection config
+#[derive(Debug, Clone)]
+pub struct ProxyConfig {
+    /// proxy server host
+    /// ipv6 should be wrapped by `[]`
+    pub host: String,
+    /// proxy server port
+    pub port: u16,
+
+    /// proxy server auth credential
+    pub auth: AuthCredential,
+}
+
+/// proxy server auth config
+#[derive(Debug, Clone)]
+pub enum AuthCredential {
+    /// no auth
+    None,
+
+    /// username password auth
+    Basic {
+        /// username
+        user: String,
+        /// password
+        passwd: String,
+    },
 }
