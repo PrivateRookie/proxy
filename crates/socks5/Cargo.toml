@@ -1,6 +1,6 @@
 [package]
 name = "sproxy"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["PrivateRookie <996514515@qq.com>"]
 description = "socks5 proxy client"
@@ -13,13 +13,16 @@ keywords = ["socks5", "proxy", "network", "tokio"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-http = "0.2.6"
-base64 = "0.13"
+http = "1.1.0"
+base64 = "0.22.0"
 tracing = "0.1"
 bytes = "1.1"
-httparse = "1.4"
+httparse = "1.8.0"
 
 tokio = { version = "1", features = ["net", "io-util"], optional = true }
+
+[dev-dependencies]
+tracing-subscriber = "*"
 
 [features]
 default = []

@@ -65,6 +65,7 @@ pub fn conn_with<S: Read + Write>(
 
     let cmd_req = build_cmd_req(Command::Connect, target_addr, target_port);
     stream.write_all(&cmd_req)?;
+    tracing::debug!("write cmd req done");
 
     let mut data = BytesMut::new();
     data.resize(5, 0);
