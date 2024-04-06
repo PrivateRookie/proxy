@@ -1,2 +1,3 @@
 [workspace]
 members = ["crates/http", "crates/socks5"]
+resolver = "2"
