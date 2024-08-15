@@ -26,7 +26,7 @@ impl ProxyConfig {
     /// return request string
     pub fn req_str(&self, target: &str) -> String {
         let mut builder = http::request::Builder::new()
-            .method("connect")
+            .method("CONNECT")
             .uri(target)
             .header("host", target);
         if self.keep_alive {
