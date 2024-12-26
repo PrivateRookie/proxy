@@ -18,8 +18,8 @@ pub fn conn_with<S: Read + Write>(
     target_port: u16,
 ) -> IOResult<(Addr, u16)> {
     let methods = match &config.auth {
-        AuthCredential::None => vec![AuthMethod::none()],
-        AuthCredential::Basic { user: _, passwd: _ } => {
+        None => vec![AuthMethod::none()],
+        Some(_) => {
             vec![AuthMethod::none(), AuthMethod::basic()]
         }
     };
@@ -42,10 +42,10 @@ pub fn conn_with<S: Read + Write>(
 
     if AuthMethod::is_basic(m) {
         match &config.auth {
-            AuthCredential::None => {
+            None => {
                 panic!("client has no auth data but server required auth");
             }
-            AuthCredential::Basic { user, passwd } => {
+            Some(AuthCredential { user, passwd }) => {
                 let auth_req = build_auth_basic_req(user.clone(), passwd.clone());
                 stream.write_all(&auth_req)?;
 

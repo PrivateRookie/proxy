@@ -45,30 +45,20 @@ impl ProxyConfig {
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "ser", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "ser", serde(tag = "type"))]
-pub enum AuthCredential {
-    /// no auth
-    None,
-    /// basic auth
-    /// see [RFC](https://datatracker.ietf.org/doc/html/rfc7617)
-    Basic {
-        /// user name
-        user: String,
-        /// password
-        passwd: String,
-    },
+pub struct AuthCredential {
+    /// user name
+    user: String,
+    /// password
+    passwd: String,
 }
 
 impl AuthCredential {
     /// config request by auth credential
     pub fn config_req(&self, builder: http::request::Builder) -> http::request::Builder {
-        match self {
-            AuthCredential::None => builder,
-            AuthCredential::Basic { user, passwd } => {
-                let auth = format!("{}:{}", user, passwd);
-                let auth = base64::encode(auth.as_bytes());
-                builder.header("proxy-authorization", format!("basic {}", auth))
-            }
-        }
+        let Self { user, passwd } = self;
+        let auth = format!("{}:{}", user, passwd);
+        let auth = base64::encode(auth.as_bytes());
+        builder.header("proxy-authorization", format!("basic {}", auth))
     }
 }
 

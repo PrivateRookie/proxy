@@ -296,7 +296,6 @@ fn parse_cmd_resp(mut data: BytesMut) -> Result<(Reply, Addr, u16), String> {
 /// proxy connection config
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "ser", derive(serde::Serialize, serde::Deserialize))]
-#[cfg_attr(feature = "ser", serde(tag = "type"))]
 pub struct ProxyConfig {
     /// proxy server host
     /// ipv6 should be wrapped by `[]`
@@ -305,21 +304,15 @@ pub struct ProxyConfig {
     pub port: u16,
 
     /// proxy server auth credential
-    pub auth: AuthCredential,
+    pub auth: Option<AuthCredential>,
 }
 
 /// proxy server auth config
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "ser", derive(serde::Serialize, serde::Deserialize))]
-pub enum AuthCredential {
-    /// no auth
-    None,
-
-    /// username password auth
-    Basic {
-        /// username
-        user: String,
-        /// password
-        passwd: String,
-    },
+pub struct AuthCredential {
+    /// username
+    user: String,
+    /// password
+    passwd: String,
 }
