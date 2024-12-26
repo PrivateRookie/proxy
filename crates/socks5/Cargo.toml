@@ -1,6 +1,6 @@
 [package]
 name = "sproxy"
-version = "0.2.1"
+version = "0.3.1"
 edition = "2021"
 authors = ["PrivateRookie <996514515@qq.com>"]
 description = "socks5 proxy client"
@@ -20,11 +20,12 @@ bytes = "1.1"
 httparse = "1.8.0"
 
 tokio = { version = "1", features = ["net", "io-util"], optional = true }
-
+serde = { version = "1", features = ["derive"], optional = true }
 [dev-dependencies]
 tracing-subscriber = "0.3"
 
 [features]
 default = []
+ser = ["serde"]
 sync = []
 async = ["tokio"]

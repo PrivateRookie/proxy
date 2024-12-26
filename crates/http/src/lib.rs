@@ -10,6 +10,7 @@ pub type IOResult<T> = std::io::Result<T>;
 /// http proxy connection config
 /// contains, auth data
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "ser", derive(serde::Serialize, serde::Deserialize))]
 pub struct ProxyConfig {
     /// proxy host
     /// ipv6 address should be wrapped with `[]`
@@ -42,6 +43,8 @@ impl ProxyConfig {
 ///
 /// see [doc](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Authentication)
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "ser", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "ser", serde(tag = "type"))]
 pub enum AuthCredential {
     /// no auth
     None,
