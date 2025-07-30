@@ -47,9 +47,9 @@ impl ProxyConfig {
 #[cfg_attr(feature = "ser", serde(tag = "type"))]
 pub struct AuthCredential {
     /// user name
-    user: String,
+    pub user: String,
     /// password
-    passwd: String,
+    pub passwd: String,
 }
 
 impl AuthCredential {
