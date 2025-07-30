@@ -1,6 +1,6 @@
 [package]
 name = "hproxy"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 authors = ["PrivateRookie <996514515@qq.com>"]
 description = "http proxy client"
